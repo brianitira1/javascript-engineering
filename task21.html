@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>real time drawing application</title>
+    <style>
+      canvas {
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="connectionStatus"></div>
+
+    <canvas id="canvasDrawing" width="800" height="600"> </canvas>
+
+    <script>
+      // get reference to HTML elements
+      const canvas = document.getElementById("canvasDrawing");
+      const context = canvas.getContext("2d");
+      const connectionStatus = document.getElementById("connectionStatus");
+
+      let websocket;
+
+      // establish a web socket connection
+
+      function connectWebSocket() {
+        //connect to web socket server
+
+        websocket = new WebSocket("ws://localhost:5000");
+
+        //web socket event handling
+
+        websocket.onopen = function () {
+          connectionStatus.textContent = "Connected";
+        };
+
+        websocket.onmessage = function (event) {
+          //handling incoming messages => drawing data from other clients
+          const data = JSON.parse(event.data);
+          draw(data.x, data.y, data.color);
+        };
+
+        websocket.onclose = function () {
+            connectionStatus.textContent = 'Disconnected';
+        }
+      }
+
+      connectWebSocket();
+
+
+      //drawing functionality
+
+      let isDrawing = false;
+
+      function startDrawing(event) {
+        // start drawing when the mouse is pressed down
+        isDrawing = true;
+        draw(event.offSetX, event.offSetY);
+      }
+
+      function draw(x, y, color = 'black') {
+        if (!isDrawing) return;
+
+        //drawing settings
+        context.lineWidth = 2;
+        context.lineCap = 'round',
+        context.strokeStyke = color;
+
+
+        // drawing on the canvas
+
+        context.lineTo(x, y);
+        context.stroke();
+        context.beginPath();
+        context.moveTo(x, y);
+
+        //sending drawing data to web socket server
+
+        if (websocket.readyState === websocket.OPEN) {
+            websocket.send(JSON.stringify({x, y, color}));
+        }
+
+      }
+
+      function endDrawing () {
+        // stop drawing on mouse release
+
+        isDrawing = false;
+        context.beginPath();
+      }
+
+
+      canvas.addEventListener('mousedown', startDrawing);
+      canvas.addEventListener('mousemove', (event) => draw(event.offsetX, event.offsetY));
+      canvas.addEventListener('mouseup', endDrawing);
+      canvas.addEventListener('mouseout', endDrawing);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat Client</title>
+    <style>
+      .sent-message {
+        color: blue;
+      }
+
+      .received-message {
+        color: black;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Chat Client</h1>
+    <div id="roomInfo" style="display: none">
+      <p>Room ID: <span id="roomId"></span></p>
+      <p>Share this Room ID with others to join.</p>
+    </div>
+    <input type="text" id="roomIdInput" placeholder="Enter Room ID" />
+    <button onclick="joinRoom()" disabled>Join Room</button>
+    <br />
+    <input
+      type="text"
+      id="messageInput"
+      placeholder="Type your message"
+      disabled
+    />
+    <button onclick="sendMessage()" disabled>Send</button>
+    <div id="messageContainer"></div>
+
+    <script>
+      let ws; // WebSocket instance
+      let roomId; // Room ID
+
+      // Connect to the WebSocket server
+      function connectWebSocket() {
+        ws = new WebSocket("ws://localhost:8000");
+
+        // Event handler for WebSocket connection open
+        ws.onopen = function () {
+          // Send a message to create a room once the connection is open
+          ws.send(JSON.stringify({ type: "createRoom" }));
+        };
+
+        // Event handler for incoming messages
+        ws.onmessage = function (event) {
+          const data = JSON.parse(event.data);
+
+          // Handle different message types
+          if (data.type === "message") {
+            // Display the received message on the UI
+            displayMessage(data.sender, data.content);
+          } else if (data.type === "roomId") {
+            roomId = data.roomId;
+            document.getElementById("roomId").textContent = roomId;
+            document.getElementById("roomInfo").style.display = "block";
+
+            // Enable input and send button after receiving room ID
+            document.getElementById("messageInput").removeAttribute("disabled");
+            document
+              .querySelector("button[onclick='sendMessage()']")
+              .removeAttribute("disabled");
+
+            // Enable join room button
+            document
+              .querySelector("button[onclick='joinRoom()']")
+              .removeAttribute("disabled");
+          }
+        };
+      }
+
+      // Join an existing room
+      function joinRoom() {
+        const roomIdInput = document.getElementById("roomIdInput");
+        roomId = roomIdInput.value;
+        roomIdInput.value = "";
+
+        // Send message to server to join the room
+        ws.send(JSON.stringify({ type: "joinRoom", roomId: roomId }));
+
+        // Enable input and send button after joining room
+        document.getElementById("messageInput").removeAttribute("disabled");
+        document
+          .querySelector("button[onclick='sendMessage()']")
+          .removeAttribute("disabled");
+      }
+
+      // Send a message to the server
+      function sendMessage() {
+        const messageInput = document.getElementById("messageInput");
+        const message = messageInput.value;
+        messageInput.value = "";
+
+        // Send message to server with room ID
+        ws.send(
+          JSON.stringify({ roomId: roomId, sender: "user1", content: message })
+        );
+      }
+
+      // Display a message on the UI
+      function displayMessage(sender, content) {
+        const messageContainer = document.getElementById("messageContainer");
+        const messageElement = document.createElement("div");
+
+        // Check if the message is sent by the current user
+        if (sender === "user1") {
+          messageElement.classList.add("sent-message");
+        } else {
+          messageElement.classList.add("received-message");
+        }
+
+        messageElement.textContent = `${sender}: ${content}`;
+        messageContainer.appendChild(messageElement);
+        messageContainer.scrollTop = messageContainer.scrollHeight; // Scroll to the bottom of the container
+      }
+
+      // Call the function to connect to WebSocket
+      connectWebSocket();
+    </script>
+  </body>
+</html>
