@@ -11,3 +11,7 @@ const calculateAreaOfCirlces = (numbers) => {
 let numbers = [1, 2, 3];
 const results = calculateAreaOfCirlces(numbers);
 console.log(results);
+
+
+
+

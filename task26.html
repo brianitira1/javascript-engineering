@@ -1,0 +1,33 @@
+//transformations
+
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    <canvas id="canvasId" width="800" height="600"></canvas>
+
+    <script>
+      let canvas = document.getElementById("canvasId");
+      let ctx = canvas.getContext("2d");
+
+      ctx.strokeStyle = "red";
+
+    
+      ctx.translate(100, 100);
+      ctx.strokeRect(0, 0, 50, 50); 
+
+      // Rotate
+      ctx.save();
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate(Math.PI / 4); 
+      ctx.strokeRect(0, 0, 50, 50); 
+      ctx.restore();
+
+      // Scale
+      ctx.save();
+      ctx.translate(300, 100);
+      ctx.scale(2, 0.5);
+      ctx.strokeRect(0, 0, 50, 50); 
+      ctx.restore();
+    </script>
+  </body>
+</html>

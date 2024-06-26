@@ -1,0 +1,16 @@
+//setting up the canvas
+
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    <canvas id="canvasId" width="800" height="600"></canvas>
+
+    <script>
+      let canvas = document.getElementById("canvasId");
+      let ctx = canvas.getContext("2d");
+
+      ctx.fillStyle = "black";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    </script>
+  </body>
+</html>

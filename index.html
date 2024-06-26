@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Snake Game</title>
+    <style>
+      body,
+      html {
+        height: 100%;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      #canvas {
+        border: 2px solid black;
+      }
+
+      .button {
+        background-color: #4caf50; 
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin-left: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas" width="600" height="400"></canvas>
+    <p id="score">Score: 0</p>
+
+    <button class="button" id="button">Play Again</button>
+
+    <script>
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+
+      const gridSize = 20;
+      const initialSnakeLength = 1;
+
+      let snake = [];
+      let direction = "right";
+      let food = {};
+      let score = 0;
+
+      for (let i = initialSnakeLength - 1; i >= 0; i--) {
+        snake.push({ x: i * gridSize, y: 0 });
+      }
+
+      /**
+       * This function randomly generates coordinates for food on the canvas.
+       * It ensures that the food is not placed on top of an existing segment
+       * of the snake by checking if the food coordinate is already occupied
+       * by another segment of the snake.
+       *
+       * The function does this by iterating over each segment of the snake
+       * and checking if the food coordinate matches any of the segment's
+       * coordinates. If a match is found, the function recursively calls itself
+       * to generate new food coordinates until a unique spot is found.
+       *
+       * Finally, the function assigns the generated food coordinates to the
+       * 'food' variable.
+       */
+      const placeFood = () => {
+        // Generate random x and y coordinates for the food
+        food = {
+          x: Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize,
+          y: Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize,
+        };
+
+        // Iterate over each segment of the snake
+        snake.forEach((segment) => {
+          // Check if the food coordinate matches any segment's coordinate
+          if (segment.x === food.x && segment.y === food.y) {
+            // If there is a match, recursively call the function to generate
+            // new food coordinates until a unique spot is found
+            placeFood();
+          }
+        });
+      };
+      placeFood();
+
+      // This function draws the snake on the canvas.
+      // It iterates over each segment of the snake and
+      // fills a rectangle with the segment's position and
+      // size on the canvas.
+      const drawSnake = () => {
+        // Set the fill style of the canvas context to green.
+        // This will be the color of the snake.
+        ctx.fillStyle = "green";
+
+        // Iterate over each segment of the snake.
+        // Each segment is an object with x and y coordinates.
+        snake.forEach((segment) => {
+          // Fill a rectangle on the canvas with the segment's position and
+          // size. The first two arguments are the x and y coordinates of
+          // the top-left corner of the rectangle. The last two arguments
+          // are the width and height of the rectangle.
+          ctx.fillRect(segment.x, segment.y, gridSize, gridSize);
+        });
+      };
+
+      // This function draws the food on the canvas.
+      // It sets the fill style of the canvas context to red,
+      // and then fills a rectangle with the food's position and
+      // size on the canvas.
+      const drawFood = () => {
+        // Set the fill style of the canvas context to red.
+        ctx.fillStyle = "red";
+
+        // Draw a rectangle on the canvas with the food's position
+        // and size.
+        // The first two arguments are the x and y coordinates of
+        // the top-left corner of the rectangle. The last two arguments
+        // are the width and height of the rectangle.
+        ctx.fillRect(food.x, food.y, gridSize, gridSize);
+      };
+
+      /**
+       * This function updates the position of the snake based on the direction the
+       * snake is moving in. If the snake's head collides with the food, the snake
+       * grows longer, the score is incremented, and new food is placed. If the
+       * snake's head collides with any other part of the snake, the game is over.
+       */
+      const updateSnake = () => {
+        // Create a new head object that is a copy of the current head
+        const head = { x: snake[0].x, y: snake[0].y };
+
+        // Update the x and y position of the head based on the direction the snake
+        // is moving in
+        switch (direction) {
+          case "right":
+            head.x += gridSize;
+            break;
+          case "left":
+            head.x -= gridSize;
+            break;
+          case "up":
+            head.y -= gridSize;
+            break;
+          case "down":
+            head.y += gridSize;
+            break;
+        }
+
+        // Add the new head to the beginning of the snake array
+        snake.unshift(head);
+
+        // If the head collides with the food, update the score, place new food,
+        // and grow the snake
+        if (head.x === food.x && head.y === food.y) {
+          score++;
+          document.getElementById("score").innerText = `Score: ${score}`;
+          placeFood();
+        }
+        // If the head does not collide with the food, remove the last segment
+        // from the snake array
+        else {
+          snake.pop();
+        }
+      };
+
+      /**
+       * This function checks if the snake has collided with the boundary of the
+       * canvas or with itself. If the snake has collided, it returns true,
+       * indicating that there is a collision. If the snake has not collided, it
+       * returns false.
+       *
+       * @return {boolean} True if there is a collision, false otherwise.
+       */
+      const checkCollision = () => {
+        // Get the head of the snake
+        const head = snake[0];
+
+        // Check if the head is outside the boundaries of the canvas
+        if (
+          head.x < 0 ||
+          head.x >= canvas.width || // Check x-coordinate
+          head.y < 0 ||
+          head.y >= canvas.height // Check y-coordinate
+        ) {
+          // If the head is outside the boundaries, return true indicating a collision
+          return true;
+          playAgain();
+        }
+
+        // Check if the head is colliding with any other segment of the snake
+        for (let i = 1; i < snake.length; i++) {
+          // If the head is colliding with any other segment, return true indicating a collision
+          if (head.x === snake[i].x && head.y === snake[i].y) {
+            return true;
+          }
+        }
+
+        // If there is no collision, return false
+        return false;
+      };
+
+      /**
+       * This function updates the direction of the snake based on the key that
+       * was pressed by the player. The direction is only updated if the key
+       * corresponds to a valid direction that the snake can move in.
+       *
+       * @param {Event} event - The keydown event that triggered this function
+       * @return {void} This function does not return anything
+       */
+      const changeDirection = (event) => {
+        // Get the key that was pressed by the player
+        const key = event.key;
+
+        // Check if the player pressed the up arrow and the snake is not already
+        // moving down
+        if (key === "ArrowUp" && direction !== "down") {
+          // If the condition is true, update the direction of the snake to up
+          direction = "up";
+        }
+        // Check if the player pressed the down arrow and the snake is not already
+        // moving up
+        else if (key === "ArrowDown" && direction !== "up") {
+          // If the condition is true, update the direction of the snake to down
+          direction = "down";
+        }
+        // Check if the player pressed the left arrow and the snake is not already
+        // moving right
+        else if (key === "ArrowLeft" && direction !== "right") {
+          // If the condition is true, update the direction of the snake to left
+          direction = "left";
+        }
+        // Check if the player pressed the right arrow and the snake is not already
+        // moving left
+        else if (key === "ArrowRight" && direction !== "left") {
+          // If the condition is true, update the direction of the snake to right
+          direction = "right";
+        }
+        // If none of the above conditions are true, do nothing
+      };
+      document.addEventListener("keydown", changeDirection);
+
+      /**
+       * This function is the main game loop. It checks for collisions,
+       * updates the snake, draws the snake, and draws the food. If there
+       * is a collision, it alerts the player and stops the game.
+       */
+      const gameLoop = () => {
+        // Check if there is a collision
+        if (checkCollision()) {
+          // If there is a collision, stop the game
+          clearInterval(gameInterval);
+          // Alert the player that the game is over
+          alert("Game Over!");
+         playAgain()
+          // Exit the function
+          return;
+        }
+
+        // Clear the canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Update the snake's position
+        updateSnake();
+        // Draw the snake
+        drawSnake();
+        // Draw the food
+        drawFood();
+      };
+
+
+      const playAgain = () => {
+        // Clear the canvas
+        button = document.getElementById("button");
+        button.addEventListener("click", () => {
+          location.reload();
+
+        });
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Update the snake's position
+        updateSnake();
+        // Draw the snake
+        drawSnake();
+        // Draw the food
+        drawFood();
+      }
+      const gameInterval = setInterval(gameLoop, 100);
+    </script>
+  </body>
+</html>

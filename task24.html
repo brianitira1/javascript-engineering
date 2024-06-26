@@ -1,0 +1,64 @@
+//drawing shapes
+
+<!DOCTYPE html>
+<html lang="en">
+
+<body>
+
+<canvas id="myCanvas" width="500" height="300"></canvas>
+    
+
+<script>
+
+    const canvas = document .getElementById('myCanvas');
+    const ctx = canvas.getContext('2d');
+
+
+    const startX = 100;
+    const startY = 250;
+    const controlPointX1 = 200;
+    const controlPointY1 = 150;
+    const controlPointX2 = 300;
+    const controlPointY2 = 350;
+    const endX = 400;
+    const endY = 250;
+
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);
+    ctx.bezierCurveTo(controlPointX1, controlPointY1, controlPointX2, controlPointY2, endX, endY);
+    ctx.strokeStyle = 'green';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+
+    ctx.fillStyle = "blue";
+    ctx.fillRect(0, 0, 80, 40)
+
+    ctx.strokeStyle = 'red';
+    ctx.strokeRect(canvas.width / 2, canvas.height / 2, 100, 100)
+
+    ctx.beginPath();
+    ctx.arc(500, 300, 30, 0, 2 * Math.PI)
+    ctx.fillStyle = 'green'
+    ctx.fill();
+    
+
+
+    ctx.beginPath();
+    ctx.moveTo(100, 50);
+    ctx.lineTo(200, 75);
+    ctx.lineTo(100, 100)
+    ctx.closePath();
+    ctx.strokeStyle = 'black'
+    ctx.stroke();
+
+
+    
+
+
+
+
+
+</script>
+</body>
+</html>

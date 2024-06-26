@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    <canvas id="canvasId" width="800" height="600"></canvas>
+
+    <script>
+      let canvas = document.getElementById("canvasId");
+      let ctx = canvas.getContext("2d");
+
+      function grid() {
+        for (let x = 0; x < canvas.width; x += 20) {
+          for (let y = 0; y < canvas.height; y += 20) {
+            ctx.strokeStyle = "red";
+            ctx.strokeRect(x, y, 20, 20);
+          }
+        }
+      }
+
+      function outerMostCells() {
+       // let cellSize = 20;
+        //let outerColor = "green";
+
+        // Top and bottom rows
+        for (let x = 0; x < canvas.width; x += 20) {
+          ctx.strokeStyle = 'green';
+          ctx.strokeRect(x, 0, 20, 20);
+          ctx.strokeRect(x, canvas.height - 20, 20, 20);
+        }
+
+        // Left and right columns (excluding corners)
+        for (let y = 20; y < canvas.height - 20; y += 20) {
+          ctx.strokeStyle = 'green';
+          ctx.strokeRect(0, y, 20, 20);
+          ctx.strokeRect(canvas.width - 20, y, 20, 20);
+        }
+      }
+
+      grid();
+      outerMostCells();
+    </script>
+  </body>
+</html>

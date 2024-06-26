@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Typewriter Effect</title>
+    <style>
+      body {
+        font-family: "Courier New", Courier, monospace;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f0f0f0;
+      }
+      #typewriter {
+        font-size: 24px;
+        border-right: 2px solid black;
+        white-space: nowrap;
+        overflow: hidden;
+        
+      }
+    </style>
+  </head>
+  <body>
+    <div id="typewriter"></div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const texts = ["hi this is brian", "I'm a software engineer"];
+        const typingDelay = 100; // delay in milliseconds between each character typing
+        const deletingDelay = 50; // delay in milliseconds between each character deleting
+        const pauseDelay = 2000; // delay in milliseconds before starting to delete
+        const element = document.getElementById("typewriter");
+
+        let textIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+
+        // Function to handle the typewriter effect
+        function typeWriter() {
+          // Get the current text from the array of texts
+          const currentText = texts[textIndex];
+
+          // If we're not deleting and the character index is less than the length of the current text,
+          // append the current character to the element's innerHTML, increment the character index,
+          // and call this function again after the typing delay
+          if (!isDeleting && charIndex < currentText.length) {
+            element.innerHTML += currentText.charAt(charIndex);
+            charIndex++;
+            setTimeout(typeWriter, typingDelay);
+          } 
+          // If we're deleting and the character index is greater than 0,
+          // remove the last character from the element's innerHTML, decrement the character index,
+          // and call this function again after the deleting delay
+          else if (isDeleting && charIndex > 0) {
+            element.innerHTML = currentText.substring(0, charIndex - 1);
+            charIndex--;
+            setTimeout(typeWriter, deletingDelay);
+          } 
+          // If we're not deleting and the character index is equal to the length of the current text,
+          // set isDeleting to true, and call this function again after the pause delay
+          else if (!isDeleting && charIndex === currentText.length) {
+            isDeleting = true;
+            setTimeout(typeWriter, pauseDelay);
+          } 
+          // If we're deleting and the character index is equal to 0,
+          // set isDeleting to false, increment the text index,
+          // and call this function again after the typing delay
+          else if (isDeleting && charIndex === 0) {
+            isDeleting = false;
+            textIndex = (textIndex + 1) % texts.length;
+            setTimeout(typeWriter, typingDelay);
+          }
+        }
+
+        typeWriter();
+      });
+    </script>
+  </body>
+</html>

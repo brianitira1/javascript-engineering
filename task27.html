@@ -1,0 +1,32 @@
+//drawing images
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    <canvas id="canvasId" width="800" height="600"></canvas>
+
+    <script>
+      let canvas = document.getElementById("canvasId");
+      let ctx = canvas.getContext("2d");
+
+      // Load an image
+      const img = new Image();
+      img.src = "/javascript-engineering/draw.jpg";
+
+      img.onload = function () {
+        // Draw the image at its original size
+        ctx.drawImage(img, 10, 10);
+
+        // Draw the image scaled to a specified size
+        ctx.drawImage(img, 100, 100, 200, 150);
+
+        // Draw a portion of the image (sprite)
+        ctx.drawImage(img, 0, 0, 100, 100, 300, 10, 50, 50);
+      };
+
+      // Create a pattern from an image
+      const pattern = ctx.createPattern(img, "repeat");
+      ctx.fillStyle = pattern;
+      ctx.fillRect(0, 200, canvas.width, 100);
+    </script>
+  </body>
+</html>

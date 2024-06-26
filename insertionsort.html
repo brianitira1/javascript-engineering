@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>insertion sort algorithm at practical application</title>
+  </head>
+  <body>
+    <p>
+      this is the sorted list of software engineers at the company according to
+      there ages
+    </p>
+    <div id="container"></div>
+    <script> 
+      // This function implements the insertion sort algorithm. It takes an array of objects and a key to sort by.
+      // 
+      // Parameters:
+      // - array: The array of objects to be sorted.
+      // - key: The key to sort the objects by.
+      //
+      // Returns:
+      // - The sorted array of objects.
+      const insertionsortalgorithm = (array, key) => {
+        // Loop through each element in the array, starting from the second element.
+        for (let i = 1; i < array.length; i++) {
+          // Store the current element in a variable for easier reference.
+          let numbertoinsert = array[i];
+          // Store the index of the previous element in a variable for easier reference.
+          let j = i - 1;
+
+          // Loop through the previous elements of the array, moving them up one place if they are greater than the current element.
+          while (j >= 0 && array[j][key] > numbertoinsert[key]) {
+            // Move the current element one place up in the array.
+            array[j + 1] = array[j];
+            // Decrement the index of the previous element.
+            j = j - 1;
+          }
+
+          // Insert the current element at its correct position in the array.
+          array[j + 1] = numbertoinsert;
+        }
+
+        // Return the sorted array.
+        return array;
+      };
+
+      const employees = [
+        { name: "Alice", age: 34 },
+        { name: "Bob", age: 25 },
+        { name: "Charlie", age: 29 },
+        { name: "David", age: 40 },
+        { name: "Eve", age: 22 },
+      ];
+
+      // This function takes an array of objects and displays them on the page, one object per list item.
+      // Each list item contains the name and age of the object.
+      //
+      // Parameters:
+      // - engineers: The array of objects to be displayed.
+      //
+      // Returns:
+      // - None
+      const displaysortedlistonthepage = (engineers) => {
+        // Get a reference to the container element on the page where the list items will be added.
+        const container = document.getElementById("container");
+
+        // Loop through each engineer object in the array.
+        for(let engineer of engineers){
+            // Create a new list item element.
+            const list = document.createElement('li');
+            // Set the text content of the list item to the engineer's name and age.
+            list.textContent =  `${engineer.name}, Age: ${engineer.age}`;
+            // Append the list item to the container element on the page.
+            container.appendChild(list);
+        }
+      };
+
+      const sortedemployees = insertionsortalgorithm(employees, 'age');
+      displaysortedlistonthepage(sortedemployees);
+
+
+    </script>
+  </body>
+</html>
